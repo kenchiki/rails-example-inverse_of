@@ -1,24 +1,23 @@
-# README
+# reject_ifとinverse_ofを試す
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## ポイント
+- reject_if: :all_blankでArticleのtitleとdescriptionのどちらも入力されていなければarticleがなかったことになるので、バリデーションが走らない
 
-Things you may want to cover:
+### 条件が重なるとinverse_ofが必要になる
 
-* Ruby version
+- `has_many :articles, -> { order(id: :desc) }`のように`-> { 〜 }`なった場合、`inverse_of: :blog`がなければ下記のバリデーションでblog.titleを参照することができなかった
 
-* System dependencies
+```ruby
+# article.rb
+validate ->(article) {
+    if article.blog.title.include?('blog') && article.title.include?('blog')
+      errors.add(:title, 'blogのタイトルにblogという文字が入っていたらarticleのタイトルにblogが
+入っていてはいけない')
+    end
+  }
+```
 
-* Configuration
+- `belongs_to :blog`にも`inverse_of: :articles`を指定しないと`blog.rb`で、カスタムバリデーションを作り、その中で`articles`を参照できないのかもしれない（要検証）
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## 動かし方
+- `db:seed`

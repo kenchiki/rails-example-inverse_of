@@ -1,0 +1,17 @@
+-# frozen_string_literal: true
+= simple_form_for(@blog) do |f|
+  = f.error_notification
+  = f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present?
+
+  .form-inputs
+    = f.input :title
+
+  %h2 アーティクル
+  - @blog.build_articles
+  = f.simple_fields_for :articles do |ff|
+    .form-inputs
+      = ff.input :title
+      = ff.input :description
+
+  .form-actions
+    = f.button :submit, class: 'btn-danger'

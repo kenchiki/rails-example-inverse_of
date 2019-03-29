@@ -8,6 +8,13 @@ class Blog < ApplicationRecord
     errors.add(:base, "Articleの#{MAX_ARTICLES + 1}個以上は登録できません") if blog.articles.length > MAX_ARTICLES
   }
 
+  validate ->(blog) {
+    # TODO:blog.articlesが参照できない
+    if blog.articles.map(&:title).include?(blog.title)
+      errors.add(:title, 'blogタイトルとarticleタイトルが同じではいけない')
+    end
+  }
+
   def build_articles
     (MAX_ARTICLES - articles.length).times do
       articles.build
